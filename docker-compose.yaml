@@ -1,3 +1,15 @@
+# docker-compose.yaml — Firecrawl self-host stack
+#
+# Self-host Firecrawl locally in one step:
+#   cp env.example .env          # (optional) copy defaults
+#   docker compose up -d
+#   open http://localhost:3002
+#
+# Services: api | playwright | redis | rabbitmq | nuq-postgres |
+#           foundationdb (optional; used when NUQ_BACKEND=fdb)
+#
+# This is the self-host draft. For the hardening checklist (auth,
+# TLS, persistence, backups, production), see SELF_HOST.md.
 name: firecrawl
 
 x-common-service: &common-service
@@ -56,8 +68,8 @@ x-common-env: &common-env
   SEARXNG_ENGINES: ${SEARXNG_ENGINES}
   SEARXNG_CATEGORIES: ${SEARXNG_CATEGORIES}
   # Set NUQ_BACKEND=fdb to run the queue on FoundationDB instead of Postgres
-  NUQ_BACKEND: ${NUQ_BACKEND}
-  FDB_CLUSTER_FILE: ${NUQ_BACKEND:+/var/fdb/fdb.cluster}
+  NUQ_BACKEND: ${NUQ_BACKEND:-pg}          # 'pg' (default) or 'fdb'
+  FDB_CLUSTER_FILE: ${FDB_CLUSTER_FILE:-/var/fdb/fdb.cluster}
 
 services:
   playwright-service:
